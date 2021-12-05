@@ -1,5 +1,3 @@
-/*global WildRydes _config*/
-
 var WildRydes = window.WildRydes || {};
 WildRydes.map = WildRydes.map || {};
 
@@ -29,7 +27,7 @@ WildRydes.map = WildRydes.map || {};
                 }
             }),
             contentType: 'application/json',
-            success: completeRequest,
+            success: result => completeRequest(result, pickupLocation),
             error: function ajaxError(jqXHR, textStatus, errorThrown) {
                 console.error('Error requesting ride: ', textStatus, ', Details: ', errorThrown);
                 console.error('Response: ', jqXHR.responseText);
@@ -38,9 +36,10 @@ WildRydes.map = WildRydes.map || {};
         });
     }
 
-    function completeRequest(result) {
+    function completeRequest(result, pickupLocation) {
         var unicorn;
         var pronoun;
+        getWeather(pickupLocation)
         console.log('Response received from API: ', result);
         unicorn = result.Unicorn;
         pronoun = unicorn.Gender === 'Male' ? 'his' : 'her';
@@ -53,7 +52,7 @@ WildRydes.map = WildRydes.map || {};
         });
     }
 
-        function getWeather(loc) {
+    function getWeather(loc) {
         let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly&appid=a099a51a6362902523bbf6495a0818aa`;
         fetch(url)
             .then(response => response.json())  //  wait for the response and convert it to JSON
@@ -110,7 +109,7 @@ WildRydes.map = WildRydes.map || {};
         wx.lon  = data.lon;
         return wx;
     }
-    
+
     // Register click handler for #request button
     $(function onDocReady() {
         $('#request').click(handleRequestClick);
@@ -163,7 +162,6 @@ WildRydes.map = WildRydes.map || {};
         $('#updates').append($('<li>' + text + '</li>'));
     }
 }(jQuery));
-
 
 let message;
 
