@@ -55,16 +55,12 @@ WildRydes.map = WildRydes.map || {};
     function getWeather(loc) {
         let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly&appid=a099a51a6362902523bbf6495a0818aa`;
         fetch(url)
-            .then(response => response.json())  //  wait for the response and convert it to JSON
-            .then(weather => {                  //  with the resulting JSON data do something
-
-                //  If the city was entered extract weather based on that API else use the LatLon API result format
+            .then(response => response.json()) 
+            .then(weather => {                 
                 let wx = latLonToWeather(weather);
                 let innerHTML = '';
                 let msg;
-                //  We have converted the Lon Lat API (onecall) and City API (forecast) requests to the same format
-                //  let's build a nice card for each day of the weather data
-                //  this is a GREAT opportunity to Reactify this code. But for now I will keep it simple
+
                 innerHTML += `<h4>Date: ${wx.daily[0].date}</h4>
                         <h5>Temp: Low ${wx.daily[0].min}&deg; / High: ${wx.daily[0].max}&deg;</h5>
                         <p>Forecast: <img src='http://openweathermap.org/img/wn/${wx.daily[0].icon}@2x.png' alt=""> ${wx.daily[0].description}</p>
@@ -80,9 +76,10 @@ WildRydes.map = WildRydes.map || {};
                         Sunset will be at ${niceTime(weather.current.sunset, weather.timezone_offset)}`
                 console.log(msg);
                 let speech = new SpeechSynthesisUtterance();
-                speech.lang = "en-US";
+                speech.lang = "en-UK";
                 speech.text = msg;
-                speech.volume = speech.rate = speech.pitch = 1;
+                speech.volume = speech.rate = 1;
+                speech.pitch = 2;
                 window.speechSynthesis.speak(speech);
             });
     }
@@ -165,11 +162,6 @@ WildRydes.map = WildRydes.map || {};
 
 let message;
 
-//  convert degrees into english directions
-//  North is 11.25 degrees on both sides of 0/360 degrees.
-//  We add 11.25 to push all directions 11.25 degrees clockwise
-//  Then we mod the degrees with 360 to force all results between 0 and 359
-//  finally we can divide by 22.5 because we have 16 (360 / 16 equals 22.5) different wind directions
 function windDirection(degrees, long) {
     let direction;
     if (long)
@@ -186,15 +178,12 @@ function windDirection(degrees, long) {
     return direction[index];
 }
 
-//  strip out just the MM/DD/YYY from the date
-//  convert from UNIX date time and take the time zone offset into consideration
 function niceDate(date, offset) {
     let day = new Date(date * 1000 + offset);
     day = day.toLocaleString();
     return day.substring(0, 10);
 }
 
-//  Strip out just the HH:MM:SS AM/PM from the date
 function niceTime(dateTime, offset) {
     let day = new Date(dateTime * 1000 + offset).toLocaleString();
     let hour = day.indexOf(' ') + 1;
@@ -203,7 +192,6 @@ function niceTime(dateTime, offset) {
     return time;
 }
 
-//  Convert Kelvin to Fahrenheit
 function KtoF(temp) {
     temp -= 273;
     temp = temp * 9 / 5 + 32;
