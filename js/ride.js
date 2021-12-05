@@ -79,7 +79,7 @@ WildRydes.map = WildRydes.map || {};
                 speech.lang = "en-UK";
                 speech.text = msg;
                 speech.volume = speech.rate = 1;
-                speech.pitch = 2;
+                speech.pitch = 5;
                 window.speechSynthesis.speak(speech);
             });
     }
